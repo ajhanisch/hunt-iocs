@@ -2,10 +2,10 @@
 PowerShell scripts designed to assist with investigating known indicators of compromise (IOCs) on multiple remote machines.
 
 # to-do
-- [ ] Replace all .lengths with .count  
+- [x] Replace all .lengths with .count  
 - [ ] Replace write host with write verbose/debug/error  
-- [ ] Replace -Subnet with -TrustedHosts. Allow multiple from command line with commas and allow file input. Add each to trusted hosts.   
-- [ ] Turn -Subnet into -Networks. Allow multiple from command line with commas and allow file input.   
+- [x] Replace -Subnet with -TrustedHosts. Allow multiple from command line with commas and allow file input. Add each to trusted hosts.   
+- [ ] Turn -Subnet into -Networks. Allow multiple from command line with commas and allow file input. Scan each network, determine live hosts, investigate live hosts.   
 - [ ] Allow -LiveHosts to accept multiple from command line with commas and file input.   
 - [ ] If given -Networks, scan input networks for live hosts, create hosts file, then start investigating.   
 - [ ] If given -LiveHosts, do not scan networks for live hosts, simply start investigation.   
