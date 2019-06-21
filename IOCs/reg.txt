@@ -1,0 +1,14 @@
+Acroread
+Adobe Update
+AdobeCheck
+AdobeCom
+IMSCMig
+McUpdate
+Register
+SysTray
+systemupdate
+wininstaller
+APVSVC
+AdobeUpdate
+hpinst
+Perf
