@@ -1,5 +1,5 @@
 # hunt-iocs
-PowerShell scripts designed to assist with investigating known indicators of compromise (IOCs) on multiple remote machines.
+PowerShell script designed to quickly and easily assist with investigating known indicators of compromise (IOCs) on multiple remote machines.
 
 # to-do
 - [ ] Add ability to retrieve all file based IOCs discovered from remote hosts to analyze  
