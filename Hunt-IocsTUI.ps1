@@ -73,9 +73,13 @@ Function Show-SetupMenu {
                 Modify-TrustedHosts -TrustedHosts $TrustedHosts
              }
             '2' { 
-                "Example input:
-                    Current directory  : output
-                    Other directory    : C:\Users\You\Desktop\Hunt-Iocs\output"
+                $ExampleInfo = 
+@"
+        Example input:
+            [In Current Directory] : output
+            [In Other Directory]   : C:\Users\YOU\Desktop\Hunt-Iocs\output
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
                 $global:OutputDirectory = Read-Host -Prompt "Enter directory: "
                 Create-Directory -Directory $global:OutputDirectory
              }
