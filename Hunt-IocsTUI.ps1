@@ -1,126 +1,187 @@
 Function Show-MainMenu {
-    param(
-        [string]$Title = 'Hunt-IOC'
-    )
     Clear-Host
-    $Options = 
+    $global:Banner = 
 @"
-==========$Title==========
-1 : Setup your IOCs hunt
-2 : Hunt for IOCs
-Q : Quit
-==========$Title==========
+ __  __                  __           ______                           
+/\ \/\ \                /\ \__       /\__  _\                          
+\ \ \_\ \  __  __    ___\ \ ,_\      \/_/\ \/     ___     ___    ____  
+ \ \  _  \/\ \/\ \  /' _ \ \ \/  _______\ \ \    / __`\  /'___\ /',__\ 
+  \ \ \ \ \ \ \_\ \/\ \/\ \ \ \_/\______\\_\ \__/\ \L\ \/\ \__//\__, `\
+   \ \_\ \_\ \____/\ \_\ \_\ \__\/______//\_____\ \____/\ \____\/\____/
+    \/_/\/_/\/___/  \/_/\/_/\/__/        \/_____/\/___/  \/____/\/___/ 
+
 "@
-    $Options
+    $global:Info = 
+@"
+        Tool    :: Hunt-Iocs
+        Author  :: Ashton Hanisch
+        Github  :: https://github.com/ajhanisch/hunt-iocs
+        Version :: 1.0
+        License :: Apache License, Version 2.0
+
+"@
+    $Options = 
+@" 
+        [1] : Setup your IOCs hunt
+        [2] : Hunt for IOCs
+        [Q] : Quit
+
+"@
+
+    Write-Host $global:Banner -ForegroundColor Green
+    Write-Host $global:Info -ForegroundColor Magenta
+    Write-Host $Options -ForegroundColor Yellow
 }
 
 Function Show-SetupMenu {
-    param(
-        [string]$Title = 'Setup'
-    )
-    Clear-Host
     $Options = 
 @"
-==========$Title==========
-1  : Set local TrustedHosts file
-2  : Set local results output directory
-3  : Set remote credentials
-4  : Set remote hosts
-5  : Set registry key based IOCs
-6  : Set dns based IOCs
-7  : Set ip based IOCs
-8  : Set file based IOCs
-9  : Set user based IOCs
-10 : Set hosts file bases IOCs
-R : Return to previous menu
-==========$Title==========
+        [1]  : Set local TrustedHosts file
+        [2]  : Set local results output directory
+        [3]  : Set remote credentials
+        [4]  : Set remote hosts
+        [5]  : Set registry key based IOCs
+        [6]  : Set dns based IOCs
+        [7]  : Set ip based IOCs
+        [8]  : Set file based IOCs
+        [9]  : Set user based IOCs
+        [10] : Set hosts file bases IOCs
+        [R]  : Return to previous menu
+
 "@
     do
     {
         Clear-Host
-        $Options
+        Write-Host $global:Banner -ForegroundColor Green
+        Write-Host $global:Info -ForegroundColor Magenta
+        Write-Host $Options -ForegroundColor Yellow
         $Input = Read-Host -Prompt "Please make a selection"
         switch($Input)
         {
             '1' { 
                 $LocalSubnet = ((Get-NetIPAddress -AddressFamily IPv4).Where({$_.InterfaceAlias -notmatch "Bluetooth|Loopback"}).IPAddress -replace "\d{1,3}$","0").Split(".")[0..2] -join "."
-                "Example input using your local subnet [$LocalSubnet]
-                    Single host    : $LocalSubnet.10
-                    Multiple hosts : $LocalSubnet.10,$LocalSubnet.20
-                    Entire subnet  : $LocalSubnet.*"
-                $TrustedHosts = Read-Host -Prompt "Enter host(s): "
+                $ExampleInfo = 
+@"
+        Example input using your local subnet [$LocalSubnet]:
+
+        [Single host]    :: $LocalSubnet.10
+        [Multiple hosts] :: $LocalSubnet.10,$LocalSubnet.20
+        [Single subnet]  :: $LocalSubnet.*
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $TrustedHosts = Read-Host -Prompt "Enter host(s) "
                 Modify-TrustedHosts -TrustedHosts $TrustedHosts
              }
             '2' { 
                 "Example input:
-                    Current directory  : Output
-                    Other directory    : C:\Users\You\Desktop\Output"
+                    Current directory  : output
+                    Other directory    : C:\Users\You\Desktop\Hunt-Iocs\output"
                 $global:OutputDirectory = Read-Host -Prompt "Enter directory: "
                 Create-Directory -Directory $global:OutputDirectory
              }
              '3' {
-                "Example input:
-                    User : Administrator
-                    Pass : Password"
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [User] : Administrator
+        [Pass] : Password
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
                 $UserName = Read-Host -Prompt "Enter username for remote access to hosts "
                 $UserPass = Read-Host -Prompt "Enter password for remote access to hosts "
                 Create-SecureCredentials -UserName $UserName -UserPass $UserPass
              }
              '4' {
-                "Example input:
-                    Hosts : live_hosts.txt"
-                $RemoteHosts = Read-Host -Prompt "Enter path to hosts file "
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [Path to Hosts File] : live_hosts.txt
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $RemoteHosts = Read-Host -Prompt "Enter path to live hosts file "
                 $global:RemoteHosts = Get-Content -Path $RemoteHosts
                 $global:RemoteHostsCount = $global:RemoteHosts.Count
                 Write-Host "Remote hosts set. Investigating [$global:RemoteHostsCount] remote hosts." -ForegroundColor Green
              }
              '5' {
-                "Example input:
-                    Path to registry key based IOCs : IOCs\regs.txt"
-				$RegistryIocs = Read-Host -Prompt "Enter path to registry key based IOCs "
-				$global:RegistryIocs = Get-Content -Path $RegistryIocs
-				$global:RegistryIocsCount = $global:RegistryIocs.Count
-				Write-Host "Registry key based IOCs set. Investigating [$global:RegistryIocsCount] IOCs." -ForegroundColor Green
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [Path to Registry Key Based IOCs] : IOCs\regs.txt
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $RegistryIocs = Read-Host -Prompt "Enter path to registry key based IOCs "
+                $global:RegistryIocs = Get-Content -Path $RegistryIocs
+                $global:RegistryIocsCount = $global:RegistryIocs.Count
+                Write-Host "Registry key based IOCs set. Investigating [$global:RegistryIocsCount] IOCs." -ForegroundColor Green
              }
              '6' {
-                "Example input:
-                    Path to dns based IOCs : IOCs\dns.txt"
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [Path to Dns Based IOCs] : IOCs\dns.txt
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
                 $DnsIocs = Read-Host -Prompt "Enter path to dns based IOCs "
                 $global:DnsIocs = Get-Content -Path $DnsIocs
                 $global:DnsIocsCount = $global:DnsIocs.Count
                 Write-Host "Dns based IOCs set. Investigating [$global:DnsIocsCount] IOCs." -ForegroundColor Green
              }
              '7' {
-                "Example input:
-                    Path to ip based IOCs : IOCs\ips.txt"
-				$IpIocs = Read-Host -Prompt "Enter path to ip based IOCs"
-				$global:IpIocs = Get-Content -Path $IpIocs
-				$global:IpIocsCount = $global:IpIocs.Count
-				Write-Host "Ip based IOCs set. Investigating [$global:IpIocsCount] IOCs." -ForegroundColor Green
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [Path to Ip Based IOCs] : IOCs\ips.txt
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $IpIocs = Read-Host -Prompt "Enter path to ip based IOCs"
+                $global:IpIocs = Get-Content -Path $IpIocs
+                $global:IpIocsCount = $global:IpIocs.Count
+                Write-Host "Ip based IOCs set. Investigating [$global:IpIocsCount] IOCs." -ForegroundColor Green
              }
              '8' {
-                "Example input:
-                    Path to file based IOCs : IOCs\files.txt"
-				$FileIocs = Read-Host -Prompt "Enter path to file based IOCs"
-				$global:FileIocs = Get-Content -Path $FileIocs
-				$global:FileIocsCount = $global:FileIocs.Count
-				Write-Host "File based IOCs set. Investigating [$global:FileIocsCount] IOCs." -ForegroundColor Green
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [Path to File Based IOCs] : IOCs\files.txt
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $FileIocs = Read-Host -Prompt "Enter path to file based IOCs"
+                $global:FileIocs = Get-Content -Path $FileIocs
+                $global:FileIocsCount = $global:FileIocs.Count
+                Write-Host "File based IOCs set. Investigating [$global:FileIocsCount] IOCs." -ForegroundColor Green
              }
              '9' {
-                "Example input:
-                    Path to user based IOCs : IOCs\users.txt"
-				$UserIocs = Read-Host -Prompt "Enter path to user based IOCs"
-				$global:UserIocs = Get-Content -Path $UserIocs
-				$global:UserIocsCount = $global:UserIocs.Count
-				Write-Host "User based IOCs set. Investigating [$global:UserIocsCount] IOCs." -ForegroundColor Green
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [Path to User Based IOCs] : IOCs\users.txt
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $UserIocs = Read-Host -Prompt "Enter path to user based IOCs"
+                $global:UserIocs = Get-Content -Path $UserIocs
+                $global:UserIocsCount = $global:UserIocs.Count
+                Write-Host "User based IOCs set. Investigating [$global:UserIocsCount] IOCs." -ForegroundColor Green
              }
              '10' {
-                "Example input:
-                    Path to hosts file based IOCs : IOCs\hosts_files.txt"
-				$HostsFileIocs = Read-Host -Prompt "Enter path to hosts file based IOCs"
-				$global:HostsFileIocs = Get-Content -Path $HostsFileIocs
-				$global:HostsFileIocsCount = $global:HostsFileIocs.Count
-				Write-Host "Hosts file based IOCs set. Investigating [$global:HostsFileIocsCount] IOCs." -ForegroundColor Green
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [Path to Hosts File Based IOCs] : IOCs\hosts_files.txt
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $HostsFileIocs = Read-Host -Prompt "Enter path to hosts file based IOCs"
+                $global:HostsFileIocs = Get-Content -Path $HostsFileIocs
+                $global:HostsFileIocsCount = $global:HostsFileIocs.Count
+                Write-Host "Hosts file based IOCs set. Investigating [$global:HostsFileIocsCount] IOCs." -ForegroundColor Green
              }
             'r' { return }
             default { 'Invalid option' }
@@ -158,17 +219,17 @@ Function Create-Directory {
         [string]$Directory
     )
 
-    Write-Host "Checking [${Directory}] exists" -ForegroundColor Cyan
+    Write-Host "Checking if [${Directory}] exists" -ForegroundColor Cyan
     if(!(Test-Path -Path $Directory))
     {
-        Write-Host "Creating [$Directory]" -ForegroundColor Yellow
+        Write-Host "Creating [$Directory] now" -ForegroundColor Yellow
         New-Item -Path $Directory -ItemType Directory -Force | Out-Null
     }
     else
     {
-        Write-Host "[${Directory}] exists" -ForegroundColor Green
+        Write-Host "[${Directory}] exists already" -ForegroundColor Green
     }
-    Write-Host "Finished checking [${Directory}] exists" -ForegroundColor Cyan
+    Write-Host "Finished checking if [${Directory}] exists" -ForegroundColor Cyan
 }
 
 Function Create-SecureCredentials {
@@ -185,41 +246,44 @@ Function Create-SecureCredentials {
 }
 
 Function Show-HuntMenu {
-    param(
-        [string]$Title = 'Hunt'
-    )
     $Options = 
 @"
-==========$Title==========
-1 : Determine live hosts on network
-2 : Investigate registry key based IOCs
-3 : Investigate dns based IOCs
-4 : Investigate ip based IOCs
-5 : Investigate file based IOCs
-6 : Investigate user based IOCs
-7 : Investigate host file based IOCs
-R : Return to previous menu
-==========$Title==========
+        [1] : Determine live hosts on network
+        [2] : Investigate registry key based IOCs
+        [3] : Investigate dns based IOCs
+        [4] : Investigate ip based IOCs
+        [5] : Investigate file based IOCs
+        [6] : Investigate user based IOCs
+        [7] : Investigate host file based IOCs
+        [R] : Return to previous menu
+
 "@
     do
     {
-        cls
-        $Options
+        Clear-Host
+        Write-Host $global:Banner -ForegroundColor Green
+        Write-Host $global:Info -ForegroundColor Magenta
+        Write-Host $Options -ForegroundColor Yellow
         $Input = Read-Host -Prompt "Please make a selection"
         switch($Input)
         {
             '1' { 
                 $LocalSubnet = ((Get-NetIPAddress -AddressFamily IPv4).Where({$_.InterfaceAlias -notmatch "Bluetooth|Loopback"}).IPAddress -replace "\d{1,3}$","0")
-                "Example input using your local subnet [$LocalSubnet]: 
-                    Network : $LocalSubnet
-                    Start   : 1
-                    End     : 254
-                    Pings   : 1"
-                 $Network = Read-Host -Prompt "Enter an IPv4 network ending in 0 "
-                 $Start = Read-Host -Prompt "Enter starting IP "
-                 $End = Read-Host -Prompt "Enter ending IP "
-                 $Ping = Read-Host -Prompt "Enter the # of pings to use "
-                 Determine-LiveHosts -Network $Network -Start $Start -End $End -Ping $Ping
+                $ExampleInfo = 
+@"
+        Example input using your local subnet [$LocalSubnet]:
+
+        [Network] : $LocalSubnet
+        [Start]   : 1
+        [End]     : 254
+        [Pings]   : 1
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $Network = Read-Host -Prompt "Enter an IPv4 network ending in 0 "
+                $Start = Read-Host -Prompt "Enter starting IP "
+                $End = Read-Host -Prompt "Enter ending IP "
+                $Ping = Read-Host -Prompt "Enter the # of pings to use "
+                Determine-LiveHosts -Network $Network -Start $Start -End $End -Ping $Ping
              }
              '2' { Investigate-RegistryIocs }
              '3' { Investigate-DnsIocs }
@@ -294,6 +358,7 @@ Function Determine-LiveHosts {
       #test the connection
       if (Test-Connection -ComputerName $IP -Count $Ping -Quiet) {
         #write the pingable address to the pipeline if it responded
+        Write-Host "Host [${IP}] responded to ping!" -ForegroundColor Green
         $IP | Out-File -FilePath $LiveHostsOutput -Append -Force
       } #if test ping
  
@@ -334,8 +399,8 @@ Function Investigate-RegistryIocs {
             {
                 if($Result.Value -match $Ioc -or $Result.Name -match $Ioc)
                 {
-                    Write-Host "Found registry key based IOC [${Ioc}] on [${RemoteHost}]" -ForegroundColor Red
-                    Write-Host "Adding registry based IOC result [${Ioc}] to [${IocsResultsOutput}]" -ForegroundColor Yellow
+                    Write-Host "Found registry key based IOC [${Ioc}] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                    Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
                     Export-Csv -InputObject $Result -Path $IocsResultsOutput -NoTypeInformation -Append
                 }
             }
@@ -368,8 +433,8 @@ Function Investigate-DnsIocs {
         {
             if($Ioc -in $ServerResults.Entry)
             {
-                Write-Host "Found ${Ioc} on [${RemoteHost}]" -ForegroundColor Red
-                Write-Host "Adding dns based IOC result [${Ioc}] to [${IocsResultsOutput}]" -ForegroundColor Yellow
+                Write-Host "Found dns based IOC [${Ioc}] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
                 $ServerResults | ? { $_.Entry -eq $Ioc } | Export-Csv -Path $IocsResultsOutput -NoTypeInformation -Append -Force
             }
         }
@@ -401,8 +466,8 @@ Function Investigate-IpIocs {
         {
             if($ServerResults.RemoteAddress -eq $Ioc)
             {
-                Write-Host "Found IP based IOC [${Ioc}] on [${RemoteHost}]" -ForegroundColor Red
-                Write-Host "Adding IP based IOC results [${Ioc}] to [${IocsResultsOutput}]" -ForegroundColor Yellow
+                Write-Host "Found IP based IOC [${Ioc}] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
                 $IocsFinding = New-Object System.Object
                 $IocsFinding | Add-Member -MemberType NoteProperty -Name "Host" -Value $RemoteHost
                 $IocsFinding | Add-Member -MemberType NoteProperty -Name "Ip" -Value $Ioc
@@ -436,10 +501,10 @@ Function Investigate-FileIocs {
         $ServerResultsCount = $ServerResults.Count 
         if($ServerResultsCount -gt 0)
         {
-            Write-Host "[${RemoteHost}] has [${ServerResultsCount}] file based IOCs!" -ForegroundColor Red
             foreach($Result in $ServerResults)
             {
-                Write-Host "Adding file based IOC result [$($Result.FullName)] to [${IocsResultsOutput}]" -ForegroundColor Yellow
+                Write-Host "Found file based IOC result [$($Result.FullName)] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
                 Export-Csv -InputObject $Result -Path $IocsResultsOutput -NoTypeInformation -Append
             }
         }
@@ -475,8 +540,8 @@ Function Investigate-UserIocs {
         {
             if($User -in $ServerResults.Name)
             {
-                Write-Host "Found user based IOC [${User}] on [${RemoteHost}]!" -ForegroundColor Red
-                Write-Host "Adding user based IOC result [${User}] to [${IocsResultsOutput}]" -ForegroundColor Yellow
+                Write-Host "Found user based IOC [${User}] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
                 $ServerResults | ? { $_.Name -eq $User } | Export-Csv -Path $IocsResultsOutput -NoTypeInformation -Append -Force
             }
         }
@@ -508,8 +573,8 @@ Function Investigate-HostsFileIocs {
         {
             if($ServerResults | Select-String -SimpleMatch $HostsFile)
             {
-                Write-Host "Found hosts file based IOC [${HostsFile}] on [${RemoteHost}]" -ForegroundColor Red
-                Write-Host "Adding hosts file based IOC results [${HostsFile}] to [${IocsResultsOutput}]" -ForegroundColor Yellow
+                Write-Host "Found hosts file based IOC [${HostsFile}] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
                 $IocsFinding = New-Object System.Object
                 $IocsFinding | Add-Member -MemberType NoteProperty -Name "Host" -Value $RemoteHost
                 $IocsFinding | Add-Member -MemberType NoteProperty -Name "Entry" -Value $HostsFile
