@@ -1,4 +1,4 @@
-﻿Function Show-MainMenu {
+Function Show-MainMenu {
     param(
         [string]$Title = 'Hunt-IOC'
     )
