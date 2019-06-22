@@ -1,0 +1,9 @@
+98.139.183.183 yahoo.com
+11.76.174.166 ctable.com
+123.125.114.144 baidu.com
+84.246.78.212 gmw.cn
+128.107.176.140 unina2.net
+10.2.2.2	update.microsoft.com
+127.0.0.1  dci.sophosupd.com
+127.0.0.1  www.www.com
+127.0.0.1  www.virustotal.com
