@@ -12,16 +12,22 @@ From [2] Hunt for IOCs -> [1] Determine live hosts on network, the script is abl
 
 ## Registry Hunt
 1. Create regs.txt file within IOCs directory containing the keys you are looking for.
+![Registry_Hunt_1](/images/example_registry_hunt_1.png)
 1. Select `[1]  : Setup your IOCs hunt` option from the main menu.
+![Registry_Hunt_2](/images/example_registry_hunt_2.png)
 1. Select `[5]  : Set registry key based IOCs` option from the setup menu.
+![Registry_Hunt_3](/images/example_registry_hunt_3.png)
 1. Enter the path to the regs.txt file you created.
+![Registry_Hunt_4](/images/example_registry_hunt_4.png)
 1. Select `[R]  : Return to previous menu` to return to main menu.
+![Registry_Hunt_5](/images/example_registry_hunt_5.png)
 1. Select `[2]  : Hunt for IOCs` from the main menu.
+![Registry_Hunt_6](/images/example_registry_hunt_6.png)
 1. Select `[2]  : Investigate registry key based IOCs` from the hunt menu.
-![Registry Hunt](/images/example_registry_hunt.png)
-After going through the above steps, the script is able to look through a certain set of registry keys on any amount of given machines for a name or value of the given IOCs. Output is a single csv file containing the results from any/all remote machines where the given IOCs were found.
+![Registry_Hunt_7](/images/example_registry_hunt.png)
 
 ### Registry Hunt Results
+After going through the above steps, the script is able to look through a certain set of registry keys on any amount of given machines for a name or value of the given IOCs. Output is a single csv file containing the results from any/all remote machines where the given IOCs were found.
 ![Registry Hunt Results](/images/example_registry_hunt_results.PNG)
 
 # Work To Do
