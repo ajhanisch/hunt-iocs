@@ -4,6 +4,7 @@
 
 # Usage Examples
 ## Ping Scan
+### Ping scan results will be saved to a live_hosts.txt file and can be used as a basis to start all hunts.
 ### Steps to start ping scan.
 1. Select `[2] Hunt for IOCs` from the main menu.
 1. Select `[1] : Determine live hosts on network` from the hunt menu.
