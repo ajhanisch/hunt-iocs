@@ -11,8 +11,15 @@ From [2] Hunt for IOCs -> [1] Determine live hosts on network, the script is abl
 ![Ping Sweep Results](/images/example_ping_sweep_results.png)
 
 ## Registry Hunt
+1. Create regs.txt file within IOCs directory containing the keys you are looking for.
+1. Select `[1]  : Setup your IOCs hunt` option from the main menu.
+1. Select `[5]  : Set registry key based IOCs` option from the setup menu.
+1. Enter the path to the regs.txt file you created.
+1. Select `[R]  : Return to previous menu` to return to main menu.
+1. Select `[2]  : Hunt for IOCs` from the main menu.
+1. Select `[2]  : Investigate registry key based IOCs` from the hunt menu.
 ![Registry Hunt](/images/example_registry_hunt.png)
-After going through [1] Setup your IOCs hunt and telling the script which registry based IOCs to look for, From [2] Hunt for IOCs -> [2] Investigate registry key based IOCs, the script is able to look through a certain set of registry keys on any amount of given machines for a name or value of the given IOCs. Output is a single csv file containing the results from any/all remote machines where the given IOCs were found.
+After going through the above steps, the script is able to look through a certain set of registry keys on any amount of given machines for a name or value of the given IOCs. Output is a single csv file containing the results from any/all remote machines where the given IOCs were found.
 
 ### Registry Hunt Results
 ![Registry Hunt Results](/images/example_registry_hunt_results.PNG)
