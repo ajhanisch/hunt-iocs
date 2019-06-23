@@ -51,6 +51,8 @@ After going through the above steps, the script is able to look through a certai
 - [ ] Add ability to look for scheduled task IOCs  
 - [ ] Add ability to look through windows event logs and construct a timeline of events  
 - [ ] Add ability to run SysInternal Suite tools (handle, strings, etc.) and output/analyze results
+- [ ] Add ability to perform baselining tasks (hashing drives/folders/files/etc.)
+- [ ] Add ability to compare baseline to current state
 - [ ] Standardize functionality and output
 - [ ] Add more input validation  
 - [ ] Add error handling 
