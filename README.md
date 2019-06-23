@@ -38,7 +38,7 @@ Output is a single text file containing the IPv4 addresses of machines that resp
 1. Select `[2] : Hunt for IOCs` from the main menu.
 ![Registry_Hunt_6](/images/example_registry_hunt_6.png)
 1. Select `[2] : Investigate registry key based IOCs` from the hunt menu.
-![Registry_Hunt_7](/images/example_registry_hunt.png)
+![Registry_Hunt_7](/images/example_registry_hunt_7.png)
   
 ### Registry Hunt Results
 After going through the above steps, the script is able to look through a certain set of registry keys on any amount of given machines for a name or value of the given IOCs. Output is a single csv file containing the results from any/all remote machines where the given IOCs were found.
