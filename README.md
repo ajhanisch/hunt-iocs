@@ -1,5 +1,5 @@
 # Hunt-Iocs
-## PowerShell script designed to quickly and easily assist with investigating known indicators of compromise (IOCs) on multiple remote machines.
+## Script designed to quickly and easily assist with investigating known indicators of compromise (IOCs) on multiple remote machines.
 ![Hunt-Iocs_Banner](/images/main_menu.png)
 
 # Usage Examples
@@ -22,6 +22,8 @@ Output is a single text file containing the IPv4 addresses of machines that resp
 1. Select `[1] : Setup your IOCs hunt` option from the main menu.
 1. Select `[4] : Set remote hosts` option from the setup menu.
 1. Enter path to live hosts file from the above ping scan. Example : `live_hosts.txt`
+![Remote_Hosts_Setup](/images/remote_hosts_setup.png)
+  
 ### Steps to start registry hunt.
 1. Create regs.txt file within IOCs directory containing the keys you are looking for.
 ![Registry_Hunt_1](/images/example_registry_hunt_1.png)
@@ -41,7 +43,7 @@ Output is a single text file containing the IPv4 addresses of machines that resp
 ### Registry Hunt Results
 After going through the above steps, the script is able to look through a certain set of registry keys on any amount of given machines for a name or value of the given IOCs. Output is a single csv file containing the results from any/all remote machines where the given IOCs were found.
 ![Registry Hunt Results](/images/example_registry_hunt_results.PNG)
-
+  
 # Work To Do
 - [ ] Documentation
 - [ ] Add ability to retrieve all file based IOCs discovered from remote hosts to analyze  
