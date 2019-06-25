@@ -1,8 +1,11 @@
 6/25/2019
 ---------
 - Version 1.0
-		- Added scheduled task based IOC investigation capabilities
-
+		- Add ability to investigate scheduled task based IOCs
+		- Added ability to download discovered file based IOC results
+		- Adjusted input examples within each menu to align better
+		- Removed some verbose output within Create-Directory as well as Modify-TrustedHosts
+		- Added output checking and printing results for each hunt tasks to display the amount of results, if any, as well as path to results file
 6/24/2019
 ---------
 - Version 1.0
