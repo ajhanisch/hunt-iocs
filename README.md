@@ -75,7 +75,7 @@ The framework will look for user based IOCs utilizing Get-LocalUser on the remot
 The framework will look for hosts file based IOCs within the *C:\Windows\System32\drivers\etc\hosts* file on the remote hosts, looking for entries that match each of the hosts file based IOCs configured.
 
 #### Scheduled Tasks
-The framework will look for scheduled task names on the remote hosts, looking for names that match each of the scheduled task based IOCs configured.
+The framework will look for scheduled task names utilizing Get-ScheduledTask on the remote hosts, looking for names that match each of the scheduled task based IOCs configured.
 
 ## Authors
 * **Ashton Hanisch** - *Initial Work*
