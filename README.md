@@ -11,6 +11,11 @@ The following may not be best practice for your environment, but will work withi
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 ```
 
+After that enter the following command in PowerShell terminal or ISE within the directory you downloaded the project to get hunting.
+```powershell
+.\Hunt-Iocs.ps1
+```
+
 ## Features
 * Simple text-based user interface (TUI)
 * Progress indication during each hunt
