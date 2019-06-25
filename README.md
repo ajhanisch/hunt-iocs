@@ -82,6 +82,7 @@ This project is licensed under the Apache 2.0 license - see the (LICENSE) file f
 
 ## To Do
 - [ ] Documentation
+- [ ] Add Show-HelpMenu detailing script capabilities, needs, output, etc.
 - [ ] Add ability to retrieve all file based IOCs discovered from remote hosts to analyze  
 - [ ] Add ability to perform current state baselining tasks (hashing drives/files/folders/etc.)
 - [ ] Add ability to compare known good baseline to current state
