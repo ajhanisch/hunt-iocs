@@ -1,3 +1,5 @@
+![Hunt-Iocs](/images/main_menu.png)
+
 # Hunt-Iocs
 Automation framework built in PowerShell to quickly and easily assist with investigating, collecting, and documenting known indicators of compromise (IOCs) on any number of remote machines as well as automating various other investigative tasks.
 
@@ -11,6 +13,7 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 ## Features
 * Simple text-based user interface (TUI)
+* Progress indication during each hunt
 * Ability to perform simple ping scan to identify live hosts on the network
 * Ability to investigate multiple types of IOCs on any amount of remote hosts
 * Ability to collect results from investigating multiple types of IOCs into easy to visualize .csv files
