@@ -63,11 +63,12 @@ Function Show-SetupMenu {
                 $LocalSubnet = ((Get-NetIPAddress -AddressFamily IPv4).Where({$_.InterfaceAlias -notmatch "Bluetooth|Loopback"}).IPAddress -replace "\d{1,3}$","0").Split(".")[0..2] -join "."
                 $ExampleInfo = 
 @"
-        Example input using your local subnet [$LocalSubnet]:
 
-        [Single host]    :: $LocalSubnet.10
-        [Multiple hosts] :: $LocalSubnet.10,$LocalSubnet.20
-        [Single subnet]  :: $LocalSubnet.*
+Example input using your local subnet [$LocalSubnet]:
+[Single host]    :: $LocalSubnet.10
+[Multiple hosts] :: $LocalSubnet.10,$LocalSubnet.20
+[Single subnet]  :: $LocalSubnet.*
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $TrustedHosts = Read-Host -Prompt "Enter host(s) "
@@ -76,9 +77,11 @@ Function Show-SetupMenu {
             '2' { 
                 $ExampleInfo = 
 @"
-        Example input:
-            [In Current Directory] : output
-            [In Other Directory]   : C:\Users\YOU\Desktop\Hunt-Iocs\output
+
+Example input:
+[In Current Directory] : output
+[In Other Directory]   : C:\Users\YOU\Desktop\Hunt-Iocs\output
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $global:OutputDirectory = Read-Host -Prompt "Enter directory: "
@@ -87,10 +90,11 @@ Function Show-SetupMenu {
              '3' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [User] : Administrator
-        [Pass] : Password
+Example input:
+[User] : Administrator
+[Pass] : Password
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $UserName = Read-Host -Prompt "Enter username for remote access to hosts "
@@ -100,9 +104,10 @@ Function Show-SetupMenu {
              '4' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [Path to Hosts File] : live_hosts.txt
+Example input:
+[Path to Hosts File] : live_hosts.txt
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $RemoteHosts = Read-Host -Prompt "Enter path to live hosts file "
@@ -113,9 +118,10 @@ Function Show-SetupMenu {
              '5' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [Path to Registry Key Based IOCs] : IOCs\regs.txt
+Example input:
+[Path to Registry Key Based IOCs] : IOCs\regs.txt
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $RegistryIocs = Read-Host -Prompt "Enter path to registry key based IOCs "
@@ -126,9 +132,10 @@ Function Show-SetupMenu {
              '6' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [Path to Dns Based IOCs] : IOCs\dns.txt
+Example input:
+[Path to Dns Based IOCs] : IOCs\dns.txt
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $DnsIocs = Read-Host -Prompt "Enter path to dns based IOCs "
@@ -139,9 +146,10 @@ Function Show-SetupMenu {
              '7' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [Path to Ip Based IOCs] : IOCs\ips.txt
+Example input:
+[Path to Ip Based IOCs] : IOCs\ips.txt
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $IpIocs = Read-Host -Prompt "Enter path to ip based IOCs"
@@ -152,9 +160,10 @@ Function Show-SetupMenu {
              '8' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [Path to File Based IOCs] : IOCs\files.txt
+Example input:
+[Path to File Based IOCs] : IOCs\files.txt
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $FileIocs = Read-Host -Prompt "Enter path to file based IOCs"
@@ -165,9 +174,10 @@ Function Show-SetupMenu {
              '9' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [Path to User Based IOCs] : IOCs\users.txt
+Example input:
+[Path to User Based IOCs] : IOCs\users.txt
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $UserIocs = Read-Host -Prompt "Enter path to user based IOCs"
@@ -178,9 +188,10 @@ Function Show-SetupMenu {
              '10' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [Path to Hosts File Based IOCs] : IOCs\hosts_files.txt
+Example input:
+[Path to Hosts File Based IOCs] : IOCs\hosts_files.txt
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $HostsFileIocs = Read-Host -Prompt "Enter path to hosts file based IOCs"
@@ -191,9 +202,10 @@ Function Show-SetupMenu {
              '11' {
                 $ExampleInfo = 
 @"
-        Example input:
 
-        [Path to Scheduled Task Based IOCs] : IOCs\scheduled_tasks.txt
+Example input:
+[Path to Scheduled Task Based IOCs] : IOCs\scheduled_tasks.txt
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $ScheduledTaskIocs = Read-Host -Prompt "Enter path to scheduled task based IOCs"
@@ -216,7 +228,6 @@ Function Modify-TrustedHosts {
 
     $TrustedHostsPath = "WSMan:\localhost\Client\TrustedHosts"
 
-    Write-Host "Checking [${TrustedHostsPath}] for [${TrustedHosts}]" -ForegroundColor Cyan
     foreach($TrustedHost in $TrustedHosts.Split(','))
     {
         if(!((Get-Item -Path $TrustedHostsPath).Value.Contains($TrustedHost)))
@@ -229,7 +240,6 @@ Function Modify-TrustedHosts {
             Write-Host "${TrustedHost} already trusted host(s)" -ForegroundColor Yellow
         }
     }
-    Write-Host "Finished checking [${TrustedHostsPath}] for [${TrustedHosts}]" -ForegroundColor Cyan
 }
 
 Function Create-Directory {
@@ -237,17 +247,10 @@ Function Create-Directory {
         [string]$Directory
     )
 
-    Write-Host "Checking if [${Directory}] exists" -ForegroundColor Cyan
     if(!(Test-Path -Path $Directory))
     {
-        Write-Host "Creating [$Directory] now" -ForegroundColor Yellow
         New-Item -Path $Directory -ItemType Directory -Force | Out-Null
     }
-    else
-    {
-        Write-Host "[${Directory}] exists already" -ForegroundColor Green
-    }
-    Write-Host "Finished checking if [${Directory}] exists" -ForegroundColor Cyan
 }
 
 Function Create-SecureCredentials {
@@ -260,7 +263,7 @@ Function Create-SecureCredentials {
 
     $UserPassSecure = ConvertTo-SecureString $UserPass -AsPlainText -Force
     $global:UserCredentials = New-Object -TypeName System.Management.Automation.PSCredential $UserName,$UserPassSecure
-    Write-Host "Remote credentials set" -ForegroundColor Green
+    Write-Host "Remote credentials set." -ForegroundColor Green
 }
 
 Function Show-HuntMenu {
@@ -274,6 +277,7 @@ Function Show-HuntMenu {
         [6] : Investigate user based IOCs
         [7] : Investigate host file based IOCs
         [8] : Investigate scheduled task based IOCs
+        [9] : Download discovered file based IOCs
         [R] : Return to previous menu
 
 "@
@@ -290,12 +294,13 @@ Function Show-HuntMenu {
                 $LocalSubnet = ((Get-NetIPAddress -AddressFamily IPv4).Where({$_.InterfaceAlias -notmatch "Bluetooth|Loopback"}).IPAddress -replace "\d{1,3}$","0")
                 $ExampleInfo = 
 @"
-        Example input using your local subnet [$LocalSubnet]:
 
-        [Network] : $LocalSubnet
-        [Start]   : 1
-        [End]     : 254
-        [Pings]   : 1
+Example input using your local subnet [$LocalSubnet]:
+[Network] : $LocalSubnet
+[Start]   : 1
+[End]     : 254
+[Pings]   : 1
+
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $Network = Read-Host -Prompt "Enter an IPv4 network ending in 0 "
@@ -311,6 +316,18 @@ Function Show-HuntMenu {
              '6' { Investigate-UserIocs }
              '7' { Investigate-HostsFileIocs }
              '8' { Investigate-ScheduledTaskIocs }
+             '9' {
+                $ExampleInfo =
+@"
+
+Example input using your current output directory [$global:OutputDirectory]:
+[Path to Discovered File IOCs] : $($global:OutputDirectory)\iocs_file.csv
+
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $DiscoveredFileIocs = Read-Host -Prompt "Enter path to discovered file IOCs "
+                Download-FileIocs -DiscoveredFileIocs $DiscoveredFileIocs
+             }
             'r' { return }
             default { 'Invalid option' }
         }
@@ -338,64 +355,52 @@ Function Determine-LiveHosts {
 
     $LiveHostsOutput = "$((Get-Location).Path)\live_hosts.txt"
 
-    #a hash table of parameter values to splat to Write-Progress
     $ProgressHashTable = @{
-     Activity = "Ping Sweep"
-     CurrentOperation = "None"
-     Status = "Pinging IP Address"
-     PercentComplete = 0
+        Activity = "Ping Sweep"
+        CurrentOperation = "None"
+        Status = "Pinging IP Address"
+        PercentComplete = 0
     }
  
-    #How many addresses need to be pinged?
-    $Count = ($End - $Start)+1
- 
-    <#
-    take the Network and split it into an array then join the first
-    3 elements back into a string separated by a period.
-    This will be used to construct an IP address.
-    #>
- 
-    $Base = $Network.Split(".")[0..2] -join "."
- 
-    #Initialize a counter
-    $i = 0
- 
-    #loop while the value of $start is <= $end
+    $Count = ($End - $Start)+1 
+    $Base = $Network.Split(".")[0..2] -join "." 
+    $i = 0 
     while ($Start -le $End) {
-      #increment the counter 
       $i++
-
-      #calculate % processed for Write-Progress
       $ProgressHashTable.PercentComplete = ($i/$Count)*100
- 
-      #define the IP address to be pinged by using the current value of $start
       $IP = "$Base.$Start" 
- 
-      #Use the value in Write-Progress
       $ProgressHashTable.currentoperation = $IP
       Write-Progress @ProgressHashTable
  
-      #test the connection
-      if (Test-Connection -ComputerName $IP -Count $Ping -Quiet) {
-        #write the pingable address to the pipeline if it responded
+      if (Test-Connection -ComputerName $IP -Count $Ping -Quiet) 
+      {
         Write-Host "Host [${IP}] responded to ping!" -ForegroundColor Green
         $IP | Out-File -FilePath $LiveHostsOutput -Append -Force
-      } #if test ping
- 
-      #increment the value $start by 1
+      }
+      
       $Start++
-    } #close while loop
+    }
 
-    Write-Host "Ping sweep finished with [$((Get-Content -Path $LiveHostsOutput).Count)] live hosts found. Results in [$LiveHostsOutput]." -ForegroundColor Green
+    if(Test-Path -Path $LiveHostsOutput)
+    {
+        $LiveHostsOutputCount = $((Get-Content -Path $LiveHostsOutput).Count-1)
+        Write-Host "Ping sweep finished with [$LiveHostsOutputCount] live host(s) found. Results in [$LiveHostsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "Ping sweep finished with [0] live hosts found." -ForegroundColor Yellow
+        Write-Host "If you are not getting results you expect, hosts may not be responding to ping." -ForegroundColor Yellow
+        Write-Host "You can create your own line separated file containing the IPv4 addresses you with to investigate." -ForegroundColor Yellow
+    }
 }
 
 Function Investigate-RegistryIocs {
     $IocsResultsOutput = "$($global:OutputDirectory)\iocs_registry.csv"
     $ProgressHashTable = @{
-     Activity = "Registry Investigation"
-     CurrentOperation = "None"
-     Status = "Investigating IP Address"
-     PercentComplete = 0
+        Activity = "Registry Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
     }
     $i = 0
     foreach($RemoteHost in $global:RemoteHosts)
@@ -426,15 +431,25 @@ Function Investigate-RegistryIocs {
             }
         }
     }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "Registry investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "Registry investigation finished with [0] results found." -ForegroundColor Yellow
+    }
 }
 
 Function Investigate-DnsIocs {
     $IocsResultsOutput = "$($global:OutputDirectory)\iocs_dns.csv"
     $ProgressHashTable = @{
-     Activity = "Dns Investigation"
-     CurrentOperation = "None"
-     Status = "Investigating IP Address"
-     PercentComplete = 0
+        Activity = "Dns Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
     }
     $i = 0
     foreach($RemoteHost in $global:RemoteHosts)
@@ -459,15 +474,25 @@ Function Investigate-DnsIocs {
             }
         }
     }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "DNS investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "DNS investigation finished with [0] results found." -ForegroundColor Yellow
+    }
 }
 
 Function Investigate-IpIocs {
     $IocsResultsOutput = "$($global:OutputDirectory)\iocs_ip.csv"
     $ProgressHashTable = @{
-     Activity = "IP Investigation"
-     CurrentOperation = "None"
-     Status = "Investigating IP Address"
-     PercentComplete = 0
+        Activity = "IP Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
     }
     $i = 0
     foreach($RemoteHost in $global:RemoteHosts)
@@ -495,15 +520,25 @@ Function Investigate-IpIocs {
             }
         }
     }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "IP investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "IP investigation finished with [0] results found." -ForegroundColor Yellow
+    }
 }
 
 Function Investigate-FileIocs {
     $IocsResultsOutput = "$($global:OutputDirectory)\iocs_file.csv"
     $ProgressHashTable = @{
-     Activity = "File Investigation"
-     CurrentOperation = "None"
-     Status = "Investigating IP Address"
-     PercentComplete = 0
+        Activity = "File Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
     }
     $i = 0
     foreach($RemoteHost in $global:RemoteHosts)
@@ -533,15 +568,25 @@ Function Investigate-FileIocs {
             Write-Host "Did not find any file based IOCs on [${RemoteHost}]" -ForegroundColor Green
         }
     }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "File investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "File investigation finished with [0] results found." -ForegroundColor Yellow
+    }
 }
 
 Function Investigate-UserIocs {
     $IocsResultsOutput = "$($global:OutputDirectory)\iocs_user.csv"
     $ProgressHashTable = @{
-     Activity = "User Investigation"
-     CurrentOperation = "None"
-     Status = "Investigating IP Address"
-     PercentComplete = 0
+        Activity = "User Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
     }
     $i = 0
     foreach($RemoteHost in $global:RemoteHosts)
@@ -566,15 +611,25 @@ Function Investigate-UserIocs {
             }
         }
     }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "User investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "User investigation finished with [0] results found." -ForegroundColor Yellow
+    }
 }
 
 Function Investigate-HostsFileIocs {
     $IocsResultsOutput = "$($global:OutputDirectory)\iocs_hosts_file.csv"
     $ProgressHashTable = @{
-     Activity = "Hosts File Investigation"
-     CurrentOperation = "None"
-     Status = "Investigating IP Address"
-     PercentComplete = 0
+        Activity = "Hosts File Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
     }
     $i = 0
     foreach($RemoteHost in $global:RemoteHosts)
@@ -602,15 +657,25 @@ Function Investigate-HostsFileIocs {
             }
         }
     }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "Hosts file investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "Hosts file investigation finished with [0] results found." -ForegroundColor Yellow
+    }
 }
 
 Function Investigate-ScheduledTaskIocs {
     $IocsResultsOutput = "$($global:OutputDirectory)\iocs_scheduled_tasks.csv"
     $ProgressHashTable = @{
-     Activity = "Scheduled Tasks Investigation"
-     CurrentOperation = "None"
-     Status = "Investigating IP Address"
-     PercentComplete = 0
+        Activity = "Scheduled Tasks Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
     }
     $i = 0
     foreach($RemoteHost in $global:RemoteHosts)
@@ -639,6 +704,63 @@ Function Investigate-ScheduledTaskIocs {
                 Select-Object -Property PSComputerName,@{Name="Actions";Expression={$_.Actions | Select-Object -Property *}},Author,Date,State,Description,Documentation,@{Name="Principal";Expression={$_.Principal | Select-Object -Property *}},SecurityDescriptor,@{Name="Settings";Expression={$_.Settings | Select-Object -Property *}},Source,TaskName,TaskPath,@{Name="Triggers";Expression={$_.Triggers | Select-Object -Property *}},URI,Version |
                 Export-Csv -Path $IocsResultsOutput -NoTypeInformation -Append -Force
             }
+        }
+    }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "Scheduled task investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "Scheduled task investigation finished with [0] results found." -ForegroundColor Yellow
+    }
+}
+
+Function Download-FileIocs {
+    Param(
+        [Parameter()]
+        [string]$DiscoveredFileIocs
+    )    
+
+    $global:DiscoveredFileIocs = Import-Csv -Path $DiscoveredFileIocs
+    $global:DiscoveredFileIocsCount = $global:DiscoveredFileIocs.Count
+
+    $ProgressHashTable = @{
+        Activity = "File IOC Download"
+        CurrentOperation = "None"
+        Status = "Downloading File"
+        PercentComplete = 0
+    }
+
+    $i = 0
+    foreach($DiscoveredFileIoc in $global:DiscoveredFileIocs)
+    {
+        $i ++
+        $ProgressHashTable.PercentComplete = ($i/$global:DiscoveredFileIocsCount)*100
+        $ProgressHashTable.CurrentOperation = $DiscoveredFileIoc.Name
+        Write-Progress @ProgressHashTable
+
+        $RemoteSessionOutput = "$($global:OutputDirectory)\$($DiscoveredFileIoc.PSComputerName)"
+        Create-Directory -Directory $RemoteSessionOutput
+
+        try
+        {
+            $RemoteSession = New-PSSession -ComputerName $DiscoveredFileIoc.PSComputerName -Credential $global:UserCredentials
+            Copy-Item -FromSession $RemoteSession -Path $DiscoveredFileIoc.FullName -Destination $RemoteSessionOutput
+        }
+        catch
+        {
+            $ErrorMessage = $_.Exception.Message
+            $FailedItem = $_.Exception.ItemName
+            Write-Host "Something went downloading $($DiscoveredFileIoc.Name) from $($DiscoveredFileIoc.PSComputerName) to $($RemoteSessionOutput)!" -ForegroundColor Red
+            Write-Host "Error Message :: $ErrorMessage" -ForegroundColor Red
+            Write-Host "Failed Item   :: $FailedItem" -ForegroundColor Red
+        }
+        finally
+        {
+            Remove-PSSession -Session $RemoteSession
         }
     }
 }
