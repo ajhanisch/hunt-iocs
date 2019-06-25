@@ -1,4 +1,4 @@
-![Hunt-Iocs](/images/main_menu.png)
+![Hunt-Iocs](/images/menu_main.PNG)
 
 # Hunt-Iocs
 Automation framework built in PowerShell to quickly and easily assist with investigating, collecting, and documenting known indicators of compromise (IOCs) on any number of remote machines as well as automating various other investigative tasks.
