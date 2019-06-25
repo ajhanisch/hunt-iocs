@@ -46,6 +46,7 @@ The following are the currently supported types of known bad IOCs the framework 
 1. Files
 1. Users
 1. Host file entries
+1. Scheduled tasks
 
 ### Hunting
 Once you have properly setup the framework with the TrustedHosts, Results Directory, Credentials, Remote Hosts, and IOCs you are ready to begin hunting. If a hunt discovers any IOC, it will output the results to the output directory specified during configuration into a single .csv file containing the results of the hunt for all hosts investigated.
@@ -72,6 +73,9 @@ The framework will look for user based IOCs utilizing Get-LocalUser on the remot
 
 #### Host File Entries
 The framework will look for hosts file based IOCs within the *C:\Windows\System32\drivers\etc\hosts* file on the remote hosts, looking for entries that match each of the hosts file based IOCs configured.
+
+#### Scheduled Tasks
+The framework will look for scheduled task names on the remote hosts, looking for names that match each of the scheduled task based IOCs configured.
 
 ## Authors
 * **Ashton Hanisch** - *Initial Work*
