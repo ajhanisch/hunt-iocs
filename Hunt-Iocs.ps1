@@ -45,7 +45,8 @@ Function Show-SetupMenu {
         [7]  : Set ip based IOCs
         [8]  : Set file based IOCs
         [9]  : Set user based IOCs
-        [10] : Set hosts file bases IOCs
+        [10] : Set hosts file based IOCs
+        [11] : Set scheduled task based IOCs
         [R]  : Return to previous menu
 
 "@
@@ -187,6 +188,19 @@ Function Show-SetupMenu {
                 $global:HostsFileIocsCount = $global:HostsFileIocs.Count
                 Write-Host "Hosts file based IOCs set. Investigating [$global:HostsFileIocsCount] IOCs." -ForegroundColor Green
              }
+             '11' {
+                $ExampleInfo = 
+@"
+        Example input:
+
+        [Path to Scheduled Task Based IOCs] : IOCs\scheduled_tasks.txt
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $ScheduledTaskIocs = Read-Host -Prompt "Enter path to scheduled task based IOCs"
+                $global:ScheduledTaskIocs = Get-Content -Path $ScheduledTaskIocs
+                $global:ScheduledTaskIocsCount = $global:ScheduledTaskIocs.Count
+                Write-Host "Scheduled task based IOCs set. Investigating [$global:ScheduledTaskIocsCount] IOCs." -ForegroundColor Green                
+             }
             'r' { return }
             default { 'Invalid option' }
         }
@@ -208,7 +222,7 @@ Function Modify-TrustedHosts {
         if(!((Get-Item -Path $TrustedHostsPath).Value.Contains($TrustedHost)))
         {
             Write-Host "Adding ${TrustedHost}" -ForegroundColor Green
-            Set-Item $TrustedHostsPath -Concatenate -Value $TrustedHost.ToString() -Force
+            Set-Item $TrustedHostsPath -Concatenate -Value $TrustedHost -Force
         }
         else
         {
@@ -259,6 +273,7 @@ Function Show-HuntMenu {
         [5] : Investigate file based IOCs
         [6] : Investigate user based IOCs
         [7] : Investigate host file based IOCs
+        [8] : Investigate scheduled task based IOCs
         [R] : Return to previous menu
 
 "@
@@ -295,6 +310,7 @@ Function Show-HuntMenu {
              '5' { Investigate-FileIocs }
              '6' { Investigate-UserIocs }
              '7' { Investigate-HostsFileIocs }
+             '8' { Investigate-ScheduledTaskIocs }
             'r' { return }
             default { 'Invalid option' }
         }
@@ -583,6 +599,45 @@ Function Investigate-HostsFileIocs {
                 $IocsFinding | Add-Member -MemberType NoteProperty -Name "Host" -Value $RemoteHost
                 $IocsFinding | Add-Member -MemberType NoteProperty -Name "Entry" -Value $HostsFile
                 $IocsFinding | Export-Csv -Path $IocsResultsOutput -NoTypeInformation -Append -Force            
+            }
+        }
+    }
+}
+
+Function Investigate-ScheduledTaskIocs {
+    $IocsResultsOutput = "$($global:OutputDirectory)\iocs_scheduled_tasks.csv"
+    $ProgressHashTable = @{
+     Activity = "Scheduled Tasks Investigation"
+     CurrentOperation = "None"
+     Status = "Investigating IP Address"
+     PercentComplete = 0
+    }
+    $i = 0
+    foreach($RemoteHost in $global:RemoteHosts)
+    {
+        $i ++
+        $ProgressHashTable.PercentComplete = ($i/$global:RemoteHostsCount)*100
+        $ProgressHashTable.CurrentOperation = $RemoteHost
+        Write-Progress @ProgressHashTable
+
+        $ServerResults = Invoke-Command -ComputerName $RemoteHost -Credential $global:UserCredentials -ScriptBlock {
+            Get-ScheduledTask
+            Write-Output $ServerResults
+        }
+  
+        foreach($ScheduledTask in $global:ScheduledTaskIocs)
+        {
+            if($ScheduledTask -in $ServerResults.TaskName)
+            {
+                Write-Host "Found scheduled task based IOC [${ScheduledTask}] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
+                $ServerResults | 
+                ? { $_.TaskName -eq $ScheduledTask } |
+                # For the love of god, there has to be a better way to do the next line. 
+                # I want to get all of the properties, even when they are properties inside of properties.
+                # It works, but I am quite sure there is a better way.
+                Select-Object -Property PSComputerName,@{Name="Actions";Expression={$_.Actions | Select-Object -Property *}},Author,Date,State,Description,Documentation,@{Name="Principal";Expression={$_.Principal | Select-Object -Property *}},SecurityDescriptor,@{Name="Settings";Expression={$_.Settings | Select-Object -Property *}},Source,TaskName,TaskPath,@{Name="Triggers";Expression={$_.Triggers | Select-Object -Property *}},URI,Version |
+                Export-Csv -Path $IocsResultsOutput -NoTypeInformation -Append -Force
             }
         }
     }
