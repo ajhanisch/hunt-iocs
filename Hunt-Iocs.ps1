@@ -120,7 +120,7 @@ Example input:
 @"
 
 Example input:
-[Path to Registry Key Based IOCs] : IOCs\regs.txt
+[Path to Registry Key Based IOCs] : iocs\regs.txt
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
@@ -134,7 +134,7 @@ Example input:
 @"
 
 Example input:
-[Path to Dns Based IOCs] : IOCs\dns.txt
+[Path to Dns Based IOCs] : iocs\dns.txt
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
@@ -148,7 +148,7 @@ Example input:
 @"
 
 Example input:
-[Path to Ip Based IOCs] : IOCs\ips.txt
+[Path to Ip Based IOCs] : iocs\ips.txt
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
@@ -162,7 +162,7 @@ Example input:
 @"
 
 Example input:
-[Path to File Based IOCs] : IOCs\files.txt
+[Path to File Based IOCs] : iocs\files.txt
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
@@ -176,7 +176,7 @@ Example input:
 @"
 
 Example input:
-[Path to User Based IOCs] : IOCs\users.txt
+[Path to User Based IOCs] : iocs\users.txt
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
@@ -190,7 +190,7 @@ Example input:
 @"
 
 Example input:
-[Path to Hosts File Based IOCs] : IOCs\hosts_files.txt
+[Path to Hosts File Based IOCs] : iocs\hosts_files.txt
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
@@ -204,7 +204,7 @@ Example input:
 @"
 
 Example input:
-[Path to Scheduled Task Based IOCs] : IOCs\scheduled_tasks.txt
+[Path to Scheduled Task Based IOCs] : iocs\scheduled_tasks.txt
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
