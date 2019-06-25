@@ -17,8 +17,7 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 * Ability to perform simple ping scan to identify live hosts on the network
 * Ability to investigate multiple types of IOCs on any amount of remote hosts
 * Ability to collect results from investigating multiple types of IOCs into easy to visualize .csv files
-* Ability to download/aggregate file based IOCs discovered during investigations to local machine for static/dynamic analysis (under development)
-* Ability to determine current state of machine and compare to known good baseline (under development)
+* Ability to download/aggregate file based IOCs discovered during investigations to local machine for static/dynamic analysis
 
 ## Starting Your First Hunt
 Starting a hunt can be broken up into two set of tasks: Configuration and Hunting.
@@ -83,7 +82,6 @@ This project is licensed under the Apache 2.0 license - see the (LICENSE) file f
 ## To Do
 - [ ] Documentation
 - [ ] Add Show-HelpMenu detailing script capabilities, needs, output, etc.
-- [ ] Add ability to retrieve all file based IOCs discovered from remote hosts to analyze  
 - [ ] Add ability to perform current state baselining tasks (hashing drives/files/folders/etc.)
 - [ ] Add ability to compare known good baseline to current state
 - [ ] Standardize each tasks functionality and output
