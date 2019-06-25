@@ -754,7 +754,7 @@ Function Download-FileIocs {
         {
             $ErrorMessage = $_.Exception.Message
             $FailedItem = $_.Exception.ItemName
-            Write-Host "Something went downloading $($DiscoveredFileIoc.Name) from $($DiscoveredFileIoc.PSComputerName) to $($RemoteSessionOutput)!" -ForegroundColor Red
+            Write-Host "Something went wrong downloading $($DiscoveredFileIoc.Name) from $($DiscoveredFileIoc.PSComputerName) to $($RemoteSessionOutput)!" -ForegroundColor Red
             Write-Host "Error Message :: $ErrorMessage" -ForegroundColor Red
             Write-Host "Failed Item   :: $FailedItem" -ForegroundColor Red
         }
