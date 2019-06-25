@@ -1,58 +1,87 @@
 # Hunt-Iocs
-## Script designed to quickly and easily assist with investigating known indicators of compromise (IOCs) on multiple remote machines.
-![Hunt-Iocs_Banner](/images/main_menu.png)
+Automation framework built in PowerShell to quickly and easily assist with investigating, collecting, and documenting known indicators of compromise (IOCs) on any number of remote machines as well as automating various other investigative tasks.
 
-# Usage Examples
-## Ping Scan
-### Ping scan results will be saved to a live_hosts.txt file and can be used as a basis to start all hunts.
-### Steps to start ping scan.
-1. Select `[2] Hunt for IOCs` from the main menu.
-1. Select `[1] : Determine live hosts on network` from the hunt menu.
-1. Enter the network (/24 ending in .0) you would like to scan. Example : `172.16.12.0`
-1. Enter the IP to start the ping scan. Example : `2`
-1. Enter the IP to end the ping scan. Example : `20`
-1. Enter the amount of pings to send. Example : `1`
-![Ping Sweep](/images/example_ping_sweep.png)
-  
-### Ping Scan Results
-Output is a single text file containing the IPv4 addresses of machines that responded to this simple ping scan.
-![Ping Sweep Results](/images/example_ping_sweep_results.png)
-  
-## Registry Hunt
-### Steps to set your remote hosts in the setup menu before hunts.
-1. Select `[1] : Setup your IOCs hunt` option from the main menu.
-1. Select `[4] : Set remote hosts` option from the setup menu.
-1. Enter path to live hosts file from the above ping scan. Example : `live_hosts.txt`
-![Remote_Hosts_Setup](/images/remote_hosts_setup.png)
-  
-### Steps to start registry hunt.
-1. Create regs.txt file within IOCs directory containing the keys you are looking for.
-![Registry_Hunt_1](/images/example_registry_hunt_1.png)
-1. Select `[1] : Setup your IOCs hunt` option from the main menu.
-![Registry_Hunt_2](/images/example_registry_hunt_2.png)
-1. Select `[5] : Set registry key based IOCs` option from the setup menu.
-![Registry_Hunt_3](/images/example_registry_hunt_3.png)
-1. Enter the path to the regs.txt file you created.
-![Registry_Hunt_4](/images/example_registry_hunt_4.png)
-1. Select `[R] : Return to previous menu` to return to main menu.
-![Registry_Hunt_5](/images/example_registry_hunt_5.png)
-1. Select `[2] : Hunt for IOCs` from the main menu.
-![Registry_Hunt_6](/images/example_registry_hunt_6.png)
-1. Select `[2] : Investigate registry key based IOCs` from the hunt menu.
-![Registry_Hunt_7](/images/example_registry_hunt_7.png)
-  
-### Registry Hunt Results
-After going through the above steps, the script is able to look through a certain set of registry keys on any amount of given machines for a name or value of the given IOCs. Output is a single csv file containing the results from any/all remote machines where the given IOCs were found.
-![Registry Hunt Results](/images/example_registry_hunt_results.PNG)
-  
-# Work To Do
+## Installation / Getting Started
+No installation is needed in order to get a copy of the project up and running. If it has not been done already in your environment, ensure to set your execution policy to allow PowerShell scripts to run. 
+
+The following may not be best practice for your environment, but will work within test environments to get up and running quickly.
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+```
+
+## Features
+* Simple text-based user interface (TUI)
+* Ability to perform simple ping scan to identify live hosts on the network
+* Ability to investigate multiple types of IOCs on any amount of remote hosts
+* Ability to collect results from investigating multiple types of IOCs into easy to visualize .csv files
+* Ability to download/aggregate file based IOCs discovered during investigations to local machine for static/dynamic analysis (under development)
+* Ability to determine current state of machine and compare to known good baseline (under development)
+
+## Starting Your First Hunt
+Starting a hunt can be broken up into two set of tasks: Configuration and Hunting.
+
+### Configuration
+#### TrustedHosts
+PowerShell utilizes the TrustedHosts file to allow for remote connections to machines. Pass the host(s) you would like to add to the TrustedHosts file within the **Setup your IOCs hunt** menu. The framework will concatenate the list of TrustedHosts with the given input, it will not overwrite the current TrustedHosts value(s).
+
+#### Results Directory
+The framework will output all results of investigations to a user-specified directory. Pass the directory you would like all results to output to within the **Setup your IOCs hunt** menu. If the directory name given does not exist, the framework will create it for you.
+
+#### Credentials
+In order to access the hosts you would like to investigate, the framework will need a set of credentials (currently username and password) to use on the remote hosts. Pass the username and password into the framework within the **Setup your IOCs hunt** menu.
+
+#### Remote Hosts
+You can use the frameworks built in scanning functionality to create the file for your or simply define your own list of IPv4 addresses. Once you have created the file or used the built in ping scan, pass the file into the framework within the **Setup your IOCs hunt** menu.
+
+#### Indicators of Compromise
+The framework works on simple input files. These input files contain the various kinds of indicators of compromise (IOCs) the framework is capable of investigating. Simply create files that contain each kind of IOC you wish to search for and pass them into the framework within the **Setup your IOCs hunt** menu.
+
+The following are the currently supported types of known bad IOCs the framework can search for. This list and the frameworks capabilities will continue to grow over time as development continues.
+
+1. Registry entries
+1. DNS resolutions
+1. IP connections
+1. Files
+1. Users
+1. Host file entries
+
+### Hunting
+Once you have properly setup the framework with the TrustedHosts, Results Directory, Credentials, Remote Hosts, and IOCs you are ready to begin hunting. If a hunt discovers any IOC, it will output the results to the output directory specified during configuration into a single .csv file containing the results of the hunt for all hosts investigated.
+
+#### Registry Entries
+The framework will look for registry key names or values that contain each of the registry key based IOCs within certain HK paths on the remote hosts. The list of currently supported paths is limited to:
+
+* HKLM:\Software\Microsoft\Windows\CurrentVersion\Run
+* HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce
+* HKCU:\Software\Microsoft\Windows\CurrentVersion\Run
+* HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce
+
+#### DNS Resolutions
+The framework will look for domain name based IOCs utilizing Get-DnsClientCache on the remote hosts, looking for entries that match each of the dns based IOCs configured.
+
+#### IP Connections
+The framework will look for IP based IOCs utilizing Get-NetTCPConnection on the remote hosts, looking for established connections that match each of the IP based IOCs configured.
+
+#### Files
+The framework will look for file based IOCs utilizing recursive directory searching on the remote hosts within the C:\ drive, looking for entries that match each of the file based IOCs configured.
+
+#### Users
+The framework will look for user based IOCs utilizing Get-LocalUser on the remote hosts, looking for users that match each of the user based IOCs configured.
+
+#### Host File Entries
+The framework will look for hosts file based IOCs within the *C:\Windows\System32\drivers\etc\hosts* file on the remote hosts, looking for entries that match each of the hosts file based IOCs configured.
+
+## Authors
+* **Ashton Hanisch** - *Initial Work*
+
+## License
+This project is licensed under the Apache 2.0 license - see the (LICENSE) file for details
+
+## To Do
 - [ ] Documentation
 - [ ] Add ability to retrieve all file based IOCs discovered from remote hosts to analyze  
-- [ ] Add ability to look for scheduled task IOCs  
-- [ ] Add ability to look through windows event logs and construct a timeline of events  
-- [ ] Add ability to run SysInternal Suite tools (handle, strings, etc.) and output/analyze results
-- [ ] Add ability to perform baselining tasks (hashing drives/folders/files/etc.)
-- [ ] Add ability to compare baseline to current state
-- [ ] Standardize functionality and output
-- [ ] Add more input validation  
-- [ ] Add error handling 
+- [ ] Add ability to perform current state baselining tasks (hashing drives/files/folders/etc.)
+- [ ] Add ability to compare known good baseline to current state
+- [ ] Standardize each tasks functionality and output
+- [ ] Add more input validation
+- [ ] Add more error handling
