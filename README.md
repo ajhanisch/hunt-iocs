@@ -3,17 +3,12 @@
 # Hunt-Iocs
 Automation framework built in PowerShell to quickly and easily assist with investigating, collecting, and documenting known indicators of compromise (IOCs) on any number of remote machines as well as automating various other investigative tasks.
 
-## Installation / Getting Started
+## Installation
 No installation is needed in order to get a copy of the project up and running. If it has not been done already in your environment, ensure to set your execution policy to allow PowerShell scripts to run. 
 
 The following may not be best practice for your environment, but will work within test environments to get up and running quickly.
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
-```
-
-After that enter the following command in PowerShell terminal or ISE within the directory you downloaded the project to get hunting.
-```powershell
-.\Hunt-Iocs.ps1
 ```
 
 ## Features
