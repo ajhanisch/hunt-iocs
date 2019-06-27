@@ -906,6 +906,7 @@ Function Show-BaselineMenu {
             'r' { return }
             default { 'Invalid option' }
         }
+        Pause
     }
     until($Input -eq 'q')
 }
