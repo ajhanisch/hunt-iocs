@@ -15,15 +15,16 @@ Function Show-MainMenu {
 @"
         Tool    :: Hunt-Iocs
         Author  :: Ashton Hanisch
-        Github  :: https://github.com/ajhanisch/hunt-iocs
+        Github  :: https://ajhanisch.github.io/hunt-iocs/
         Version :: 1.0
         License :: Apache License, Version 2.0
 
 "@
     $Options = 
 @" 
-        [1] : Setup your IOCs hunt
-        [2] : Hunt for IOCs
+        [1] : Setup Menu
+        [2] : Hunt Menu
+        [3] : Baseline Menu
         [Q] : Quit
 
 "@
@@ -47,6 +48,8 @@ Function Show-SetupMenu {
         [9]  : Set user based IOCs
         [10] : Set hosts file based IOCs
         [11] : Set scheduled task based IOCs
+        [12] : Set service based IOCs
+        [13] : Set process based IOCs
         [R]  : Return to previous menu
 
 "@
@@ -60,14 +63,14 @@ Function Show-SetupMenu {
         switch($Input)
         {
             '1' { 
-                $LocalSubnet = ((Get-NetIPAddress -AddressFamily IPv4).Where({$_.InterfaceAlias -notmatch "Bluetooth|Loopback"}).IPAddress -replace "\d{1,3}$","0").Split(".")[0..2] -join "."
+                $global:LocalSubnet = ((Get-NetIPAddress -AddressFamily IPv4).Where({$_.InterfaceAlias -notmatch "Bluetooth|Loopback"}).IPAddress -replace "\d{1,3}$","0").Split(".")[0..2] -join "."
                 $ExampleInfo = 
 @"
 
-Example input using your local subnet [$LocalSubnet]:
-[Single host]    :: $LocalSubnet.10
-[Multiple hosts] :: $LocalSubnet.10,$LocalSubnet.20
-[Single subnet]  :: $LocalSubnet.*
+Example input using your local subnet [$global:LocalSubnet]:
+[Single host]    :: $global:LocalSubnet.10
+[Multiple hosts] :: $global:LocalSubnet.10,$global:LocalSubnet.20
+[Single subnet]  :: $global:LocalSubnet.*
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
@@ -86,6 +89,7 @@ Example input:
                 Write-Host $ExampleInfo -ForegroundColor Cyan
                 $global:OutputDirectory = Read-Host -Prompt "Enter directory: "
                 Create-Directory -Directory $global:OutputDirectory
+                Write-Host "[$global:OutputDirectory] created successfully!" -ForegroundColor Green
              }
              '3' {
                 $ExampleInfo = 
@@ -213,6 +217,34 @@ Example input:
                 $global:ScheduledTaskIocsCount = $global:ScheduledTaskIocs.Count
                 Write-Host "Scheduled task based IOCs set. Investigating [$global:ScheduledTaskIocsCount] IOCs." -ForegroundColor Green                
              }
+             '12' {
+                $ExampleInfo = 
+@"
+
+Example input:
+[Path to Service Based IOCs] : iocs\services.txt
+
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $ServiceIocs = Read-Host -Prompt "Enter path to service based IOCs"
+                $global:ServiceIocs = Get-Content -Path $ServiceIocs
+                $global:ServiceIocsCount = $global:ServiceIocs.Count
+                Write-Host "Service based IOCs set. Investigating [$global:ServiceIocsCount] IOCs." -ForegroundColor Green   
+            }
+             '13' {
+                $ExampleInfo = 
+@"
+
+Example input:
+[Path to Process Based IOCs] : iocs\processes.txt
+
+"@
+                Write-Host $ExampleInfo -ForegroundColor Cyan
+                $ProcessIocs = Read-Host -Prompt "Enter path to process based IOCs"
+                $global:ProcessIocs = Get-Content -Path $ProcessIocs
+                $global:ProcessIocsCount = $global:ProcessIocs.Count
+                Write-Host "Process based IOCs set. Investigating [$global:ProcessIocsCount] IOCs." -ForegroundColor Green   
+            }
             'r' { return }
             default { 'Invalid option' }
         }
@@ -269,16 +301,18 @@ Function Create-SecureCredentials {
 Function Show-HuntMenu {
     $Options = 
 @"
-        [1] : Determine live hosts on network
-        [2] : Investigate registry key based IOCs
-        [3] : Investigate dns based IOCs
-        [4] : Investigate ip based IOCs
-        [5] : Investigate file based IOCs
-        [6] : Investigate user based IOCs
-        [7] : Investigate host file based IOCs
-        [8] : Investigate scheduled task based IOCs
-        [9] : Download discovered file based IOCs
-        [R] : Return to previous menu
+        [1]  : Determine live hosts on network
+        [2]  : Investigate registry key based IOCs
+        [3]  : Investigate dns based IOCs
+        [4]  : Investigate ip based IOCs
+        [5]  : Investigate file based IOCs
+        [6]  : Investigate user based IOCs
+        [7]  : Investigate host file based IOCs
+        [8]  : Investigate scheduled task based IOCs
+        [9]  : Download discovered file based IOCs
+        [10] : Investigate service based IOCs
+        [11] : Investigate process based IOCs
+        [R]  : Return to previous menu
 
 "@
     do
@@ -291,12 +325,11 @@ Function Show-HuntMenu {
         switch($Input)
         {
             '1' { 
-                $LocalSubnet = ((Get-NetIPAddress -AddressFamily IPv4).Where({$_.InterfaceAlias -notmatch "Bluetooth|Loopback"}).IPAddress -replace "\d{1,3}$","0")
                 $ExampleInfo = 
 @"
 
-Example input using your local subnet [$LocalSubnet]:
-[Network] : $LocalSubnet
+Example input using your local subnet [$global:LocalSubnet.0]:
+[Network] : $global:LocalSubnet.0
 [Start]   : 1
 [End]     : 254
 [Pings]   : 1
@@ -328,6 +361,8 @@ Example input using your current output directory [$global:OutputDirectory]:
                 $DiscoveredFileIocs = Read-Host -Prompt "Enter path to discovered file IOCs "
                 Download-FileIocs -DiscoveredFileIocs $DiscoveredFileIocs
              }
+             '10' { Investigate-ServiceIocs }
+             '11' { Investigate-ProcessIocs }
             'r' { return }
             default { 'Invalid option' }
         }
@@ -411,10 +446,10 @@ Function Investigate-RegistryIocs {
         Write-Progress @ProgressHashTable
 
         $ServerResults = Invoke-Command -ComputerName $RemoteHost -Credential $global:UserCredentials -ScriptBlock {
-            (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"}};
-            (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"}};
-            (Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"}}
-            (Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"}};
+            (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"}} | ? { $_.Name -notlike "PS*" }
+            (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"}} | ? { $_.Name -notlike "PS*" }
+            (Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"}} | ? { $_.Name -notlike "PS*" }
+            (Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"}} | ? { $_.Name -notlike "PS*" }
             Write-Output $ServerResults
         }
 
@@ -742,7 +777,7 @@ Function Download-FileIocs {
         $ProgressHashTable.CurrentOperation = $DiscoveredFileIoc.Name
         Write-Progress @ProgressHashTable
 
-        $RemoteSessionOutput = "$($global:OutputDirectory)\$($DiscoveredFileIoc.PSComputerName)"
+        $RemoteSessionOutput = "$($global:OutputDirectory)\$($DiscoveredFileIoc.PSComputerName)\downloaded_iocs"
         Create-Directory -Directory $RemoteSessionOutput
 
         try
@@ -765,6 +800,211 @@ Function Download-FileIocs {
     }
 }
 
+Function Investigate-ServiceIocs {
+    $IocsResultsOutput = "$($global:OutputDirectory)\iocs_service.csv"
+    $ProgressHashTable = @{
+        Activity = "Service Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
+    }
+    $i = 0
+    foreach($RemoteHost in $global:RemoteHosts)
+    {
+        $i ++
+        $ProgressHashTable.PercentComplete = ($i/$global:RemoteHostsCount)*100
+        $ProgressHashTable.CurrentOperation = $RemoteHost
+        Write-Progress @ProgressHashTable
+
+        $ServerResults = Invoke-Command -ComputerName $RemoteHost -Credential $global:UserCredentials -ScriptBlock {
+            Get-Service
+            Write-Output $ServerResults
+        }
+
+        foreach($Service in $global:ServiceIocs)
+        {
+            if($Service -in $ServerResults.Name)
+            {
+                Write-Host "Found service based IOC [${Service}] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
+                $ServerResults | ? { $_.Name -eq $Service } | Export-Csv -Path $IocsResultsOutput -NoTypeInformation -Append -Force
+            }
+        }
+    }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "Service investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "Service investigation finished with [0] results found." -ForegroundColor Yellow
+    }
+}
+
+Function Investigate-ProcessIocs {
+    $IocsResultsOutput = "$($global:OutputDirectory)\iocs_process.csv"
+    $ProgressHashTable = @{
+        Activity = "Process Investigation"
+        CurrentOperation = "None"
+        Status = "Investigating IP Address"
+        PercentComplete = 0
+    }
+    $i = 0
+    foreach($RemoteHost in $global:RemoteHosts)
+    {
+        $i ++
+        $ProgressHashTable.PercentComplete = ($i/$global:RemoteHostsCount)*100
+        $ProgressHashTable.CurrentOperation = $RemoteHost
+        Write-Progress @ProgressHashTable
+
+        $ServerResults = Invoke-Command -ComputerName $RemoteHost -Credential $global:UserCredentials -ScriptBlock {
+            Get-Process
+            Write-Output $ServerResults
+        }
+
+        foreach($Process in $global:ProcessIocs)
+        {
+            if($Process -in $ServerResults.ProcessName)
+            {
+                Write-Host "Found process based IOC [${Process}] on [${RemoteHost}]! " -ForegroundColor Red -NoNewline
+                Write-Host "Adding to [${IocsResultsOutput}]." -ForegroundColor Yellow
+                $ServerResults | ? { $_.ProcessName -eq $Process } | Export-Csv -Path $IocsResultsOutput -NoTypeInformation -Append -Force
+            }
+        }
+    }
+
+    if(Test-Path -Path $IocsResultsOutput)
+    {
+        $IocsResultsOutputCount = $((Get-Content -Path $IocsResultsOutput).Count-1)
+        Write-Host "Process investigation finished with [$IocsResultsOutputCount] result(s) found. Results in [$IocsResultsOutput]." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "Process investigation finished with [0] results found." -ForegroundColor Yellow
+    }
+}
+
+Function Show-BaselineMenu {
+    $Options = 
+@"
+        [1]  : Baseline remote hosts
+        [R]  : Return to previous menu
+
+"@
+    do
+    {
+        Clear-Host
+        Write-Host $global:Banner -ForegroundColor Green
+        Write-Host $global:Info -ForegroundColor Magenta
+        Write-Host $Options -ForegroundColor Yellow
+        $Input = Read-Host -Prompt "Please make a selection"
+        switch($Input)
+        {
+            '1' { Get-HostBaseline }
+            'r' { return }
+            default { 'Invalid option' }
+        }
+    }
+    until($Input -eq 'q')
+}
+
+Function Get-HostBaseline {
+    $ProgressHashTable = @{
+        Activity = "Host Baseline"
+        CurrentOperation = "None"
+        Status = "Baselining IP Address"
+        PercentComplete = 0
+    }
+
+    $i = 0
+    foreach($RemoteHost in $global:RemoteHosts)
+    {
+        $i ++
+        $ProgressHashTable.PercentComplete = ($i/$global:RemoteHostsCount)*100
+        $ProgressHashTable.CurrentOperation = $RemoteHost
+        Write-Progress @ProgressHashTable
+
+        $RemoteSessionOutput = "$($global:OutputDirectory)\$($RemoteHost)\baseline\$((Get-Date).ToString('yyyyMMdd_hh-mm-ss_tt'))"
+        Create-Directory -Directory $RemoteSessionOutput
+
+        try
+        {
+            $RemoteSession = New-PSSession -ComputerName $RemoteHost -Credential $global:UserCredentials
+            $ServerResults = @{
+                Services = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-Service }
+                Processes = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-Process }
+                TCPConnections = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-NetTCPConnection }
+                LocalUsers = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-LocalUser }
+                LocalAdministrators = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-LocalGroupMember -Group "Administrators" }
+                LocalGroups = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-LocalGroup }
+                ComputerInfo = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-ComputerInfo }
+                Drives = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-PSDrive }
+                Shares = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-SmbShare }
+                NetworkAdapters = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-NetIPAddress }
+                ScheduledTasks = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-ScheduledTask | Select-Object -Property PSComputerName,@{Name="Actions";Expression={$_.Actions | Select-Object -Property *}},Author,Date,State,Description,Documentation,@{Name="Principal";Expression={$_.Principal | Select-Object -Property *}},SecurityDescriptor,@{Name="Settings";Expression={$_.Settings | Select-Object -Property *}},Source,TaskName,TaskPath,@{Name="Triggers";Expression={$_.Triggers | Select-Object -Property *}},URI,Version }
+                DnsCache = Invoke-Command -Session $RemoteSession -ScriptBlock { Get-DnsClientCache }
+                RunKeys = Invoke-Command -Session $RemoteSession -ScriptBlock { 
+                    (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"}} | ? { $_.Name -notlike "PS*" }
+                    (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"}} | ? { $_.Name -notlike "PS*" }
+                    (Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"}} | ? { $_.Name -notlike "PS*" }
+                    (Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -ErrorAction SilentlyContinue).PSObject.Properties | Select-Object -Property Name,Value,PSComputerName,@{Name="HiveKey"; Expression={"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"}} | ? { $_.Name -notlike "PS*" }
+                }
+            }
+
+            # Determine which drives to hash.
+            $DrivesToHash = $ServerResults.Drives | ? { $_.Provider -like '*\FileSystem' }
+
+            # Hash determined drives.
+            $HashResults = @()
+            foreach($Drive in $DrivesToHash)
+            {
+                Write-Host "Hashing [$($Drive.Root)] on [${RemoteHost}]. This will take a while." -ForegroundColor Yellow
+                $DriveResults = Invoke-Command -Session $RemoteSession -ScriptBlock { 
+                    Get-ChildItem -Path $using:Drive.Root -Include * -Recurse -Force -ErrorAction SilentlyContinue | Get-FileHash -Algorithm MD5 -ErrorAction SilentlyContinue
+                    Write-Output $DriveResults
+                }
+                $HashResults += $DriveResults
+                Write-Host "Finished hashing [$($Drive.Root)] on [${RemoteHost}]" -ForegroundColor Green
+            }
+
+            # Add $HashResults to $ServerResults.
+            if($HashResults.Length -gt 0)
+            {
+                $ServerResults.Add('DrivesHashes',$HashResults)
+            }
+            else
+            {
+                Write-Host "Did not get any drive hashing results from drives [$DrivesToHash] on [$RemoteHost]!" -ForegroundColor Red
+            }
+
+            # Output all keys/values from hashtable.
+            foreach($Key in $ServerResults.Keys)
+            {
+                $Value = $ServerResults[$Key]
+                if($Value -ne $null)
+                {
+                    Write-Host "Writing [$Key] results for [$RemoteHost] to [${RemoteSessionOutput}\${Key}.csv]" -ForegroundColor Green
+                    $Value | Export-Csv -Path "${RemoteSessionOutput}\${Key}.csv" -NoTypeInformation -Force -ErrorAction SilentlyContinue
+                }
+            }
+        }
+        catch
+        {
+            $e = $_.Exception
+            $LineNumber = $_.InvocationInfo.ScriptLineNumber
+            $ErrorMessage = $e.Message 
+            Write-Host "Something went wrong baselining  ${RemoteHost}!" -ForegroundColor Red
+            Write-Host "Caught exception: ${e} at line number [$LineNumber]" -ForegroundColor Red 
+        }
+        finally
+        {
+            Remove-PSSession -Session $RemoteSession
+        }
+    }
+}
+
 ##########################
 # Entry point of script. #
 ##########################
@@ -776,6 +1016,7 @@ do
     {
         '1' { Show-SetupMenu }
         '2' { Show-HuntMenu }
+        '3' { Show-BaselineMenu }
         'q' { return }
     }
 }
