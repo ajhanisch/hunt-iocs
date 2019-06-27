@@ -10,7 +10,7 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 ```
 
 ## Features
-- Simple text-based user interface (TUI)
+- Simple menu based interface
 - Progress indication during each hunt
 - Ability to perform simple ping scan to identify live hosts on the network
 - Ability to investigate multiple types of IOCs on any amount of remote hosts
