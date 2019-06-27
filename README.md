@@ -10,12 +10,27 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 ```
 
 ## Features
-* Simple text-based user interface (TUI)
-* Progress indication during each hunt
-* Ability to perform simple ping scan to identify live hosts on the network
-* Ability to investigate multiple types of IOCs on any amount of remote hosts
-* Ability to collect results from investigating multiple types of IOCs into easy to visualize .csv files
-* Ability to download/aggregate file based IOCs discovered during investigations to local machine for static/dynamic analysis
+- Simple text-based user interface (TUI)
+- Progress indication during each hunt
+- Ability to perform simple ping scan to identify live hosts on the network
+- Ability to investigate multiple types of IOCs on any amount of remote hosts
+- Ability to collect results from investigating multiple types of IOCs into easy to visualize .csv files
+- Ability to download/aggregate file based IOCs discovered during investigations to local machine for static/dynamic analysis
+- Ability to establish a baseline on any amount of remote hosts
+- Remote host baseline consists of gathering and documenting the following host properties:
+  - Services
+  - Processes
+  - Network connections
+  - Local users
+  - Local administrators
+  - Local groups
+  - Drives
+  - Shares
+  - Network adapters
+  - Scheduled tasks
+  - Dns resolutions
+  - Registry run keys
+  - MD5 hashes of all files on all drives
 
 ## Quickstart
 Check out the [Hunt-Iocs wiki](https://github.com/ajhanisch/hunt-iocs/wiki) for instructions on getting started with Hunt-Iocs.
