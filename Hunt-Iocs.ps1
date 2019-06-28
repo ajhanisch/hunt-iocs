@@ -418,7 +418,7 @@ Function Determine-LiveHosts {
 
     if(Test-Path -Path $LiveHostsOutput)
     {
-        $LiveHostsOutputCount = $((Get-Content -Path $LiveHostsOutput).Count-1)
+        $LiveHostsOutputCount = $((Get-Content -Path $LiveHostsOutput).Count)
         Write-Host "Ping sweep finished with [$LiveHostsOutputCount] live host(s) found. Results in [$LiveHostsOutput]." -ForegroundColor Green
     }
     else
