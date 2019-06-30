@@ -1,3 +1,17 @@
+6/30/2019
+---------
+- Version 1.0
+		- Replaced non-approved cmdlet verbs with approved verbs
+		- Replaced old exception catching messages with new variables and output
+		- Added input validation for all input files and directories
+		- Added input validation for input TrustedHosts
+		- Added input validation for input remote hosts
+		- Organized code into labeled sections
+		- Added error handling for most tasks, catching and presenting errors including exception and line number
+		- Added ability to pass comma separated list of IPv4 addresses or path to a file containing IPv4 address to investigate remote hosts
+		- Modified how remote host credentials are input into framework
+		- Added clearing of specific global variables upon script exiting
+
 6/27/2019
 ---------
 - Version 1.0
