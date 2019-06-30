@@ -1231,5 +1231,5 @@ try {
     until($Input -eq 'q')   
 }
 finally {
-    Clear-Variable -Name UserCredentials -Scope Global
+    Clear-Variable -Name UserCredentials -Scope Global -ErrorAction SilentlyContinue
 }
