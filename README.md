@@ -33,4 +33,4 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
   - MD5 hashes of all files on all drives
 
 ## Quickstart
-Check out the [Hunt-Iocs wiki](https://github.com/ajhanisch/hunt-iocs/wiki) for instructions on getting started with Hunt-Iocs.
+Check out the Hunt-Iocs [Wiki](https://github.com/ajhanisch/hunt-iocs/wiki) for instructions on getting started with Hunt-Iocs.
