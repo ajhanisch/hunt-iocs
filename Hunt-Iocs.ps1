@@ -107,7 +107,7 @@ Example input:
 
 "@
                 Write-Host $ExampleInfo -ForegroundColor Cyan
-                $global:UserCredentials = $host.ui.PromptForCredential("Administrative Credentials", "Please enter user name and password.", "", "NetBiosUserName")
+                $global:UserCredentials = $host.ui.PromptForCredential("Remote Administrative Credentials", "Please enter user name and password.", "", "NetBiosUserName")
                 Write-Host "Remote credentials set." -ForegroundColor Green
              }
              '4' {
